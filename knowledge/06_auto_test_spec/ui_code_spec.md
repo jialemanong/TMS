@@ -146,7 +146,8 @@ POM定位变更必须由人工确认：
 |---|---|---|
 | `settings` | session | UI地址、浏览器配置 |
 | `artifact_dir` | session | 本次执行产物目录 |
-| `browser_type` | session | 浏览器类型 |
+| `browser_name` | session | pytest-playwright选择的浏览器名称 |
+| `browser_type` | session | pytest-playwright提供的BrowserType对象 |
 | `browser_type_launch_args` | session | headless、slow_mo |
 | `browser_context_args` | session | viewport、HTTPS和录屏 |
 | `page` | function | pytest-playwright提供的Page |

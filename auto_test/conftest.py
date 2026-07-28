@@ -65,6 +65,8 @@ def pytest_configure(config: pytest.Config) -> None:
 
     merged = _deep_merge(raw_config.get("defaults", {}), environment_config)
     merged = _expand_env(merged)
+    if not config.getoption("--browser"):
+        config.option.browser = [merged["browser"]["type"]]
     configured_artifacts = config.getoption("--artifacts-dir") or merged["artifacts"]["directory"]
     artifact_root = Path(configured_artifacts)
     if not artifact_root.is_absolute():
@@ -110,11 +112,6 @@ def api_client(settings: dict[str, Any]) -> Iterator[ApiClient]:
     )
     yield client
     client.close()
-
-
-@pytest.fixture(scope="session")
-def browser_type(pytestconfig: pytest.Config, settings: dict[str, Any]) -> str:
-    return settings["browser"]["type"]
 
 
 @pytest.fixture(scope="session")
