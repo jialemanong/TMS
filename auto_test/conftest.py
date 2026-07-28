@@ -22,9 +22,11 @@ from auto_test.core.captcha_recognizer import CaptchaRecognizer
 from auto_test.core.reporter import JsonResultReporter, TestResult, utc_now
 from auto_test.core.tms_auth import TmsAuthenticator
 from auto_test.pom.tms import TmsLoginPage, TmsPageRegistry
+from auto_test.utils.data_loader import TestDataLoader
 
 AUTO_TEST_ROOT = Path(__file__).resolve().parent
 ENV_FILE = AUTO_TEST_ROOT / "config" / "env.yaml"
+TEST_DATA_ROOT = AUTO_TEST_ROOT / "config" / "test_data"
 ENV_PATTERN = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-([^}]*))?\}")
 
 
@@ -98,6 +100,24 @@ def settings(pytestconfig: pytest.Config) -> dict[str, Any]:
 @pytest.fixture(scope="session")
 def artifact_dir(pytestconfig: pytest.Config) -> Path:
     return pytestconfig._tms_artifact_dir
+
+
+@pytest.fixture(scope="session")
+def test_data_loader() -> TestDataLoader:
+    """Provide the only supported entry point for versioned business data."""
+    return TestDataLoader(TEST_DATA_ROOT)
+
+
+@pytest.fixture
+def task_dispatch_data(
+    test_data_loader: TestDataLoader,
+) -> dict[str, Any]:
+    """Return isolated data for the normal task-dispatch trace scenario."""
+    return test_data_loader.load_case(
+        "task_dispatch",
+        "normal",
+        "completed_task_trace",
+    )
 
 
 @pytest.fixture(scope="session")

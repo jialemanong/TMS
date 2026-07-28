@@ -1,0 +1,17 @@
+normal:
+  completed_task_trace:
+    description: 已完成容器任务可追踪到同一容器的车辆任务
+    knowledge_paths:
+      - knowledge/01_business_domain/bill_definition.md
+      - knowledge/02_state_machine/container_task_flow.md
+      - knowledge/02_state_machine/vehicle_task_flow.md
+      - knowledge/03_process_scenario/main_flow/point_to_point.md
+    container_task_code: TG202607081356345618
+    vehicle_task_code: REQ1783490194
+    container_code: RQ20260708135634456
+    container_status: 已完成
+    vehicle_status: 已完成
+
+abnormal: {}
+
+boundary: {}

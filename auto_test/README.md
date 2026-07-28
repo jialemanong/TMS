@@ -79,7 +79,68 @@ def example(tms_pages):
 这里只展示fixture调用方式，不是业务测试用例。`tms_pages` 当前覆盖测试账号
 登录后可见的27个叶子页面，包括基础配置、规则、任务池、日志、监控和参数配置。
 
-## 4. 运行最小验证
+## 4. 运行任务调度链路试点
+
+试点用例只读查询已经完成车辆分配的容器任务和车辆任务。业务数据从
+`config/test_data/task_dispatch.yaml` 加载，启动命令不再传递业务单号：
+
+```bash
+python -m pytest -c auto_test/pytest.ini \
+  auto_test/test_ui/test_tms_task_dispatch_trace.py \
+  --env=test --headed --slowmo=800
+```
+
+执行结果、知识库路径、场景名称、失败截图和录屏会由基座写入
+`auto_test/artifacts/<run-id>/`。
+
+## 5. 测试数据维护规范
+
+业务测试数据与环境配置必须隔离：
+
+```text
+auto_test/config/
+├── env.yaml
+└── test_data/
+    └── <business_module>.yaml
+```
+
+- `env.yaml` 只保存环境地址、账号、凭证引用、浏览器和超时等环境参数。
+- 运单号、任务号、容器号等业务数据只能保存在 `config/test_data/`。
+- 每个YAML文件对应一个业务模块，并必须包含 `normal`、`abnormal`、
+  `boundary` 三类场景。
+- 场景下以稳定的用例名称保存数据；数据失效时评审并更新对应YAML。
+- 测试用例禁止直接读取YAML、环境变量或硬编码业务单据。
+- 测试用例只能通过 `conftest.py` 提供的Fixture获取业务数据。
+- Codex新增用例时应复用 `test_data_loader`，并为具体场景提供语义化Fixture。
+- 数据用例应记录 `description` 和对应的 `knowledge_paths`，便于维护和回流。
+
+标准数据结构：
+
+```yaml
+normal:
+  case_name:
+    description: 正向场景说明
+    knowledge_paths:
+      - knowledge/对应文档.md
+    business_field: value
+
+abnormal: {}
+
+boundary: {}
+```
+
+统一加载入口为 `auto_test.utils.data_loader.TestDataLoader`。Fixture示例：
+
+```python
+@pytest.fixture
+def module_case_data(test_data_loader):
+    return test_data_loader.load_case("module_name", "normal", "case_name")
+```
+
+`load_module()`、`load_scenario()` 和 `load_case()` 返回隔离副本，用例修改
+数据不会污染其他用例。模块、场景或用例不存在时会抛出明确的数据错误。
+
+## 6. 运行最小验证
 
 API基础封装冒烟不访问网络，使用受控的伪Session验证请求生命周期：
 
@@ -113,7 +174,7 @@ python -m pytest -c auto_test/pytest.ini auto_test/test_ui --headed
 python -m pytest -c auto_test/pytest.ini auto_test --env=test
 ```
 
-## 5. 执行产物
+## 7. 执行产物
 
 默认输出到 `auto_test/artifacts/<run-id>/`：
 
@@ -125,9 +186,10 @@ python -m pytest -c auto_test/pytest.ini auto_test --env=test
 结果结构预留 `business_scenario`、`knowledge_paths`、`artifacts` 和
 `feedback_target` 字段，后续可转换并回流到 `knowledge/test_feedback/`。
 
-## 6. 扩展边界
+## 8. 扩展边界
 
 - API用例只能使用fixture注入的 `api_client`。
 - 浏览器、Context和Page只能由pytest fixture管理。
 - UI流程脚本不得直接写定位器，后续必须调用人工维护的POM。
+- 业务测试数据只能通过数据Fixture注入，禁止在脚本中写死业务单据。
 - POM定位与原子操作由人工维护，业务流程只能在后续阶段通过POM编排。
