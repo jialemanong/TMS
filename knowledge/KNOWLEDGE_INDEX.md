@@ -6,17 +6,18 @@
 ## 一、知识库目录结构
 ```
 docs/knowledge/
-├── KNOWLEDGE_INDEX.md                本文件【入口索引，优先读取】
-├── 01_business_domain/               业务领域层
-├── 02_state_machine/                 状态机层【测试核心】
-├── 03_process_scenario/              业务流程场景
-│   ├── main_flow/                    正向主流程
-│   └── exception_flow/               异常中断流程
-├── 04_constraint_rule/               硬性业务约束
-├── 05_reference/                     参考资料
-│   ├── openapi/                      接口规范、接口明细与测试指南
-│   └── database/                     数据库DDL、字段字典与断言指南
-└── test_feedback/                    测试反馈回流【生成用例必须参考】
+├── KNOWLEDGE_INDEX.md 本文件【入口索引，优先读取】
+├── 01_business_domain/ 业务领域层
+├── 02_state_machine/ 状态机层【测试核心】
+├── 03_process_scenario/ 业务流程场景
+│ ├── main_flow/ 正向主流程
+│ └── exception_flow/ 异常中断流程
+├── 04_constraint_rule/ 硬性业务约束
+├── 05_reference/ 参考资料
+│ ├── openapi/ 接口规范、接口明细与测试指南
+│ └── database/ 数据库 DDL、字段字典与断言指南
+├── 06_auto_test_spec/ 自动化测试编码规范【AI 脚本生成强制标准】
+└── test_feedback/ 测试反馈回流【生成用例必须参考】
 ```
 
 ## 二、知识查询路由规则
@@ -171,6 +172,16 @@ docs/knowledge/
 - 校验需求、容器任务、车辆任务完整链路
 - 校验储位、容器和绑定关系一致性
 - 检查孤儿记录、重复编码和非法状态
+
+### 🔹 查询【自动化代码规范、POM约束、Codex生成脚本标准】
+→ 读取 `06_auto_test_spec/` 下文档
+- API自动化标准：`06_auto_test_spec/api_code_spec.md`
+- UI自动化&POM标准：`06_auto_test_spec/ui_code_spec.md`
+适用场景：
+- Codex生成自动化脚本必须遵守编码规范
+- 区分人工封装POM与AI生成流程用例边界
+- 统一日志、断言、项目分层标准
+
 
 ### 🔹 查询【历史缺陷、未覆盖场景、自动化优化点】
 → 读取 `test_feedback/` 目录下所有文件
