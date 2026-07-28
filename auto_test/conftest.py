@@ -18,7 +18,10 @@ import yaml
 
 from auto_test.core.api_client import ApiClient
 from auto_test.core.browser_base import BrowserBase
+from auto_test.core.captcha_recognizer import CaptchaRecognizer
 from auto_test.core.reporter import JsonResultReporter, TestResult, utc_now
+from auto_test.core.tms_auth import TmsAuthenticator
+from auto_test.pom.tms import TmsLoginPage
 
 AUTO_TEST_ROOT = Path(__file__).resolve().parent
 ENV_FILE = AUTO_TEST_ROOT / "config" / "env.yaml"
@@ -148,6 +151,39 @@ def browser_base(page, settings: dict[str, Any], artifact_dir: Path) -> BrowserB
         artifact_dir=artifact_dir,
         base_url=settings.get("ui", {}).get("base_url", ""),
     )
+
+
+@pytest.fixture(scope="session")
+def captcha_recognizer() -> CaptchaRecognizer:
+    return CaptchaRecognizer()
+
+
+@pytest.fixture
+def tms_login_page(browser_base: BrowserBase) -> TmsLoginPage:
+    return TmsLoginPage(browser_base)
+
+
+@pytest.fixture
+def tms_authenticated_page(
+    page,
+    settings: dict[str, Any],
+    tms_login_page: TmsLoginPage,
+    captcha_recognizer: CaptchaRecognizer,
+):
+    """Return the fixture-managed Page after OCR-assisted TMS login."""
+    ui_config = settings.get("ui", {})
+    auth_config = ui_config.get("auth", {})
+    authenticator = TmsAuthenticator(
+        tms_login_page,
+        captcha_recognizer,
+        max_attempts=int(auth_config.get("captcha_max_attempts", 3)),
+        login_timeout_ms=int(auth_config.get("login_timeout_ms", 15_000)),
+    )
+    authenticator.login(
+        username=str(ui_config.get("username", "")),
+        password=str(ui_config.get("password", "")),
+    )
+    return page
 
 
 @pytest.hookimpl(hookwrapper=True)

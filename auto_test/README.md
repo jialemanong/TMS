@@ -2,7 +2,8 @@
 
 技术栈：Python、pytest、requests、Playwright。
 
-当前目录仅包含自动化基础设施和技术冒烟验证，不包含TMS业务用例、页面POM或页面定位。
+当前目录包含自动化基础设施、人工维护的TMS任务池POM和技术冒烟验证，
+不包含TMS业务流程用例。
 
 ## 1. 前置条件
 
@@ -56,6 +57,17 @@ export TMS_UI_PASSWORD="your-password"
 
 禁止把真实账号、密码、Token或生产环境地址提交到仓库。
 
+需要登录的UI用例统一使用 `tms_authenticated_page` fixture。该fixture会：
+
+- 从环境变量读取账号和密码；
+- 每次识别前点击验证码图片刷新，并等待图片内容变化；
+- 使用 `ddddocr` 识别四位验证码并自动填写；
+- 验证码错误、过期或识别失败时最多重试3次；
+- 登录成功后返回由pytest统一管理的 `Page`。
+
+OCR能力仅用于已授权的TMS测试环境。POM中只保留登录页原子操作，
+登录重试由基础认证组件统一管理。
+
 ## 4. 运行最小验证
 
 API基础封装冒烟不访问网络，使用受控的伪Session验证请求生命周期：
@@ -107,4 +119,4 @@ python -m pytest -c auto_test/pytest.ini auto_test --env=test
 - API用例只能使用fixture注入的 `api_client`。
 - 浏览器、Context和Page只能由pytest fixture管理。
 - UI流程脚本不得直接写定位器，后续必须调用人工维护的POM。
-- 当前阶段禁止增加TMS业务流程脚本和POM。
+- POM定位与原子操作由人工维护，业务流程只能在后续阶段通过POM编排。

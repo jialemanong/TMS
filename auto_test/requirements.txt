@@ -3,3 +3,4 @@ requests>=2.32,<3
 playwright>=1.52,<2
 pytest-playwright>=0.7,<1
 PyYAML>=6.0,<7
+ddddocr>=1.5,<2
