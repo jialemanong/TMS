@@ -173,14 +173,29 @@ docs/knowledge/
 - 校验储位、容器和绑定关系一致性
 - 检查孤儿记录、重复编码和非法状态
 
-### 🔹 查询【自动化代码规范、POM约束、Codex生成脚本标准】
-→ 读取 `06_auto_test_spec/` 下文档
-- API自动化标准：`06_auto_test_spec/api_code_spec.md`
-- UI自动化&POM标准：`06_auto_test_spec/ui_code_spec.md`
+### 🔹 查询【API自动化代码、接口Fixture、断言和结果回流规范】
+→ 生成或修改任何API自动化代码前，必须读取 `06_auto_test_spec/api_code_spec.md`
 适用场景：
-- Codex生成自动化脚本必须遵守编码规范
-- 区分人工封装POM与AI生成流程用例边界
-- 统一日志、断言、项目分层标准
+- 使用统一ApiClient和pytest fixture
+- 编写TMS接口测试、参数化测试和业务断言
+- 规范请求日志、异常处理和敏感信息脱敏
+- 输出可回流 `test_feedback` 的结构化结果
+- 约束Codex生成API测试代码的允许范围和禁止事项
+
+### 🔹 查询【UI自动化代码、POM边界、Playwright和Codex生成规范】
+→ 人工维护POM或Codex生成UI流程前，必须读取 `06_auto_test_spec/ui_code_spec.md`
+适用场景：
+- 人工创建和维护TMS页面POM及元素定位
+- 使用统一Browser、Context、Page和页面fixture
+- 编写截图、录屏、等待和UI断言
+- Codex仅在 `test_ui` 编排业务流程
+- 发现POM能力缺口并交由人工扩充
+
+### 🔹 自动化代码规则冲突处理
+→ `06_auto_test_spec/` 约束代码组织和生成边界；业务预期仍按以下优先级判断：
+`04_constraint_rule` > `02_state_machine` > `03_process_scenario` > `01_business_domain`
+
+自动化规范不得覆盖或改写业务规则。知识库没有明确业务信息时，禁止为了生成脚本而自行推断。
 
 
 ### 🔹 查询【历史缺陷、未覆盖场景、自动化优化点】
@@ -215,3 +230,5 @@ docs/knowledge/
 3. **版本说明**：本知识库基于 TMS方案V2.2.0.1-20250615 版本整理
 4. **反馈回流**：发现缺失场景，记录到 test_feedback/uncovered_scenario.md
 5. **测试生成**：生成测试用例时，必须同时参考主流程 + 异常流程 + 历史缺陷库
+6. **编码规范**：生成或修改自动化代码前，必须读取 `06_auto_test_spec/` 对应规范
+7. **POM边界**：POM元素定位仅由人工维护；Codex只允许在 `test_ui` 中调用已有POM编排流程
