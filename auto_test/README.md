@@ -68,6 +68,17 @@ export TMS_UI_PASSWORD="your-password"
 OCR能力仅用于已授权的TMS测试环境。POM中只保留登录页原子操作，
 登录重试由基础认证组件统一管理。
 
+登录后页面统一通过 `tms_pages` fixture 获取，例如：
+
+```python
+def example(tms_pages):
+    tms_pages.demand_pool.open()
+    tms_pages.container_task_pool.open()
+```
+
+这里只展示fixture调用方式，不是业务测试用例。`tms_pages` 当前覆盖测试账号
+登录后可见的27个叶子页面，包括基础配置、规则、任务池、日志、监控和参数配置。
+
 ## 4. 运行最小验证
 
 API基础封装冒烟不访问网络，使用受控的伪Session验证请求生命周期：

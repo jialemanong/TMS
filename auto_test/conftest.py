@@ -21,7 +21,7 @@ from auto_test.core.browser_base import BrowserBase
 from auto_test.core.captcha_recognizer import CaptchaRecognizer
 from auto_test.core.reporter import JsonResultReporter, TestResult, utc_now
 from auto_test.core.tms_auth import TmsAuthenticator
-from auto_test.pom.tms import TmsLoginPage
+from auto_test.pom.tms import TmsLoginPage, TmsPageRegistry
 
 AUTO_TEST_ROOT = Path(__file__).resolve().parent
 ENV_FILE = AUTO_TEST_ROOT / "config" / "env.yaml"
@@ -184,6 +184,15 @@ def tms_authenticated_page(
         password=str(ui_config.get("password", "")),
     )
     return page
+
+
+@pytest.fixture
+def tms_pages(
+    tms_authenticated_page,
+    browser_base: BrowserBase,
+) -> TmsPageRegistry:
+    """Return all TMS POM objects after OCR-assisted authentication."""
+    return TmsPageRegistry(browser_base)
 
 
 @pytest.hookimpl(hookwrapper=True)
